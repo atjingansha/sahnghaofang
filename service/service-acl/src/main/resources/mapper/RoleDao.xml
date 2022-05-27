@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atwangjin.dao.RoleDao">
+
+    <sql id="column" >
+        id,role_name,role_code,description,create_time,update_time,is_deleted
+    </sql>
+
+
+
+    <resultMap id="Role" type="Role">
+       <id column="id" property="id"></id>
+       <association column="role_name" property="roleName"></association>
+       <association column="role_code" property="roleCode"></association>
+       <association column="description" property="description"></association>
+       <association column="create_time" property="createTime"></association>
+       <association column="update_time" property="updateTime"></association>
+       <association column="is_deleted" property="isDeleted"></association>
+    </resultMap>
+
+
+
+<!--  List<Role> findAll();-->
+    <select id="findAll" resultType="Role">
+        select
+        <include refid="column"></include>
+        from
+        acl_role where is_deleted = 0
+    </select>
+
+
+<!--Integer save(Role role);-->
+
+    <insert id="save" >
+        insert into acl_role(role_name,role_code,description)
+        values (#{roleName},#{roleCode},#{description})
+    </insert>
+
+
+<!--Role getById(Long id);-->
+    <select id="getById" parameterType="Role" resultType="Role">
+        select <include refid="column"></include>
+        from acl_role
+        where id = #{id}
+    </select>
+
+
+
+
+<!--    Integer update(Role role);-->
+    <update id="update">
+        update acl_role set
+            role_name=#{roleName},
+            role_code=#{roleCode},
+            description=#{description},
+            update_time=now()
+
+        where id=#{id}
+    </update>
+
+
+<!--    Integer delete(Long id);-->
+    <update id="delete" parameterType="Role">
+        update acl_role set
+            is_deleted =1
+        where id=#{id}
+    </update>
+
+
+<!--Page<Role> findPage(Map<String, Object> filters);-->
+    <select id="findPage" parameterType="Role" resultType="Role">
+        select
+            <include refid="column"></include>
+        from acl_role
+        <where>
+              is_deleted=0
+            <if test="roleName !=null and roleName.length>0">
+              and  role_name like concat('%',#{roleName},'%')
+            </if>
+        </where>
+        order by id desc
+    </select>
+</mapper>

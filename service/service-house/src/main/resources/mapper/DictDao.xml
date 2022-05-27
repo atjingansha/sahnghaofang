@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atwangjin.dao.DictDao">
+
+
+    <resultMap id="dictResultMap" type="Dict">
+        <id column="id" property="id"></id>
+        <result column="parent_id" property="parentId"></result>
+        <result column="name" property="name"></result>
+        <result column="dict_code" property="dictCode"></result>
+        <result column="create_time" property="createTime"></result>
+        <result column="update_time" property="updateTime"></result>
+        <result column="is_deleted" property="isDeleted"></result>
+    </resultMap>
+
+
+
+    <sql id="column">
+            id,parent_id,name,dict_code,create_time,update_time,is_deleted
+        </sql>
+
+<!--   List<Dict> getDict(Long id);   -->
+
+    <select id="getDict" parameterType="long" resultMap="dictResultMap">
+        select <include refid="column"></include>
+        from hse_dict
+        where parent_id=#{id}
+    </select>
+
+
+
+<!--     Integer isParentCount(Long id);-->
+    <select id="isParentCount" resultType="integer">
+        select count(*)
+        from hse_dict
+        where parent_id=#{id}
+    </select>
+
+
+
+<!--    Dict findListByDictCode(Long dictCode);-->
+    <select id="findListByDictCode" resultMap="dictResultMap" >
+        select <include refid="column"></include>
+        from hse_dict
+        where dict_code=#{dictCode}
+    </select>
+
+
+<!--        String getNameById(Long id);-->
+    <select id="getNameById" parameterType="long" resultType="string">
+        select name from hse_dict where id=#{id}
+    </select>
+</mapper>

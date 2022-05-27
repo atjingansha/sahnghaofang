@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atwangjin.dao.CommunityDao">
+
+
+    <sql id="column">
+id,
+name,
+description,
+province_id,
+city_id,
+area_id,
+plate_id,
+address,
+longitude,
+latitude,
+build_years,
+property_price,
+property_company,
+developer,
+build_num,
+house_num,
+average_price,
+create_time,
+update_time,
+is_deleted
+        </sql>
+
+
+<resultMap id="Community" type="Community">
+    <id column="id" property="id"></id>
+    <result column="name" property="name"></result>
+    <result column="description" property="description"></result>
+    <result column="province_id" property="provinceId"></result>
+    <result column="city_id" property="cityId"></result>
+    <result column="area_id" property="areaId"></result>
+    <result column="plate_id" property="plateId"></result>
+    <result column="address" property="address"></result>
+    <result column="longitude" property="longitude"></result>
+    <result column="latitude" property="latitude"></result>
+    <result column="build_years" property="buildYears"></result>
+    <result column="property_price" property="propertyPrice"></result>
+    <result column="property_company" property="propertyCompany"></result>
+    <result column="developer" property="developer"></result>
+    <result column="build_num" property="buildNum"></result>
+    <result column="house_num" property="houseNum"></result>
+    <result column="average_price" property="averagePrice"></result>
+    <result column="create_time" property="createTime"></result>
+    <result column="update_time" property="updateTime"></result>
+    <result column="is_deleted" property="isDeleted"></result>
+</resultMap>
+
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        insert into hse_house (
+            community_id ,
+            name ,
+            description ,
+            total_price ,
+            unit_price ,
+            build_area ,
+            inside_area ,
+            house_type_id ,
+            floor_id ,
+            build_structure_id ,
+            direction_id ,
+            decoration_id ,
+            house_use_id ,
+            elevator_ratio ,
+            listing_date ,
+            last_trade_date
+        ) values (
+                     #{communityId} ,
+                     #{name} ,
+                     #{description} ,
+                     #{totalPrice} ,
+                     #{unitPrice} ,
+                     #{buildArea} ,
+                     #{insideArea} ,
+                     #{houseTypeId} ,
+                     #{floorId} ,
+                     #{buildStructureId} ,
+                     #{directionId} ,
+                     #{decorationId} ,
+                     #{houseUseId} ,
+                     #{elevatorRatio} ,
+                     #{listingDate} ,
+                     #{lastTradeDate}
+                 )
+    </insert>
+
+
+
+    <select id="getById" parameterType="Community" resultType="Community">
+        select <include refid="column"></include>
+        from hse_community
+        where id = #{id}
+    </select>
+
+
+
+
+    <update id="update">
+        update hse_community set
+            name= #{name},
+            description= #{description},
+            area_id= #{areaId},
+            plate_id= #{plateId},
+            address= #{address},
+            build_years= #{buildYears},
+            property_price= #{propertyPrice},
+            property_company= #{propertyCompany},
+            developer= #{developer},
+            build_num= #{buildNum},
+            house_num= #{houseNum},
+            average_price= #{averagePrice}
+        where id=#{id}
+    </update>
+
+
+
+    <update id="delete" parameterType="Community">
+        update hse_community set
+            is_deleted =1
+        where id=#{id}
+    </update>
+
+
+
+    <select id="findPage" parameterType="Community" resultType="Community">
+        select
+        <include refid="column"></include>
+        from hse_community
+        <where>
+            is_deleted=0
+            <if test="name !=null and name.length>0">
+                and  name like concat('%',#{name},'%')
+            </if>
+            <if test="area_id !=null and area_id.length>0">
+                and  area_id =#{areaId}
+            </if>
+            <if test="plate_id !=null and plate_id.length>0">
+                and  plate_id =#{plateId}
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+<!--        List<Community> findAll();-->
+    <select id="findAll" resultMap="Community">
+        select <include refid="column"></include>
+        from hse_community
+        where      is_deleted=0
+    </select>
+</mapper>

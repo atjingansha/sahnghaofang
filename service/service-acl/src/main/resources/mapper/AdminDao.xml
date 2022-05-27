@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atwangjin.dao.AdminDao">
+
+    <sql id="column" >
+    id,
+    username,
+    password,
+    name,
+    phone,
+    head_url,
+    description,
+    create_time,
+    update_time,
+    is_deleted
+    </sql>
+
+
+
+
+    <resultMap id="Admin" type="Admin">
+        <id column="id" property="id"></id>
+        <association column="username" property="username"></association>
+        <association column="password" property="password"></association>
+        <association column="name" property="name"></association>
+        <association column="phone" property="phone"></association>
+        <association column="head_url" property="headUrl"></association>
+        <association column="description" property="description"></association>
+        <association column="create_time" property="createTime"></association>
+        <association column="update_time" property="updateTime"></association>
+        <association column="is_deleted" property="isDeleted"></association>
+    </resultMap>
+
+
+    <insert id="save" >
+        insert into acl_admin(username,password,name,phone,head_url,description)
+        values (#{username},#{password},#{name},#{phone},#{headUrl},#{description})
+    </insert>
+
+
+
+    <select id="getById" parameterType="Admin" resultType="Admin">
+        select <include refid="column"></include>
+        from acl_admin
+        where id = #{id}
+    </select>
+
+
+
+    <update id="update">
+        update acl_admin set
+
+        <if test="username!=null">
+            username=#{username},
+        </if>
+        <if test="password!=null">
+            password=#{password},
+        </if>
+        <if test="name!=null">
+            name=#{name},
+        </if>
+        <if test="phone!=null">
+            phone=#{phone},
+        </if>
+        <if test="headUrl!=null">
+            head_url=#{headUrl},
+        </if>
+        <if test="description!=null">
+            description=#{description},
+        </if>
+
+          update_time=now()
+          where id=#{id}
+    </update>
+
+
+
+    <update id="delete" parameterType="Admin">
+        update acl_admin set
+            is_deleted =1
+        where id=#{id}
+    </update>
+
+
+
+    <select id="findPage" parameterType="Admin" resultType="Admin">
+        select
+            <include refid="column"></include>
+        from acl_admin
+        <where>
+              is_deleted=0
+            <if test="username !=null and username.length>0">
+              and  username like concat('%',#{username},'%')
+            </if>
+            <if test="name !=null and name.length>0">
+                and  name like concat('%',#{name},'%')
+            </if>
+            <if test="phone !=null and phone.length>0">
+                and  phone like concat('%',#{phone},'%')
+            </if>
+            <if test="startTime !=null and startTime.length>0">
+                and  create_time >=#{startTime}
+            </if>
+            <if test="endTime !=null and endTime.length>0">
+                and  create_time &lt;=#{endTime}
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+<!--       List<Admin> findAll();-->
+    <select id="findAll" resultType="Admin">
+        select
+        <include refid="column"></include>
+        from
+        acl_admin where is_deleted = 0
+    </select>
+
+<!--        Admin getByUserName(String username);-->
+<select id="getByUserName" parameterType="string" resultType="Admin">
+    select <include refid="column"></include>
+    from  acl_admin where is_deleted = 0
+    and username=#{username}
+</select>
+</mapper>
